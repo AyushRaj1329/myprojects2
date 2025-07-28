@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]  # or 'main' if that's your default branch
+    branches: [ main ]  # or 'main'
 
 permissions:
   contents: read
@@ -16,18 +16,18 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Pages
+      - name: Set up GitHub Pages
         uses: actions/configure-pages@v3
 
       - name: Upload site files
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v2  # ✅ latest version for GitHub Pages
         with:
-          path: '.'  # deploy everything in root (HTML, CSS, JS)
+          path: '.'  # root directory
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v2
