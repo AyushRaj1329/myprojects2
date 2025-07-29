@@ -48,17 +48,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure Python is installed (Windows PowerShell)
-        shell: pwsh
+        shell: powershell
         run: |
            if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
             Write-Error "❌ Python is not installed. Please install Python and add it to PATH."
             exit 1
            }
 
-      - name: Run local HTTP server on port 80
+      - name: Run local HTTP server on port 8000
+        shell: powershell
         run: |
-          echo "🧹 Cleaning up any existing servers on port 80..."
-          sudo fuser -k 80/tcp || true
-          
-          echo "🚀 Starting local HTTP server on port 80..."
-          nohup sudo python3 -m http.server 80 --bind 0.0.0.0 > server.log 2>&1 &
+           Write-Host "🚀 Starting local HTTP server on port 8000..."
+           Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m", "http.server", "8000", "--bind", "127.0.0.1"
