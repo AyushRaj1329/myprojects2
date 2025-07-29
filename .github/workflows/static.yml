@@ -47,12 +47,13 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Ensure Python is installed
+      - name: Ensure Python is installed (Windows PowerShell)
+        shell: pwsh
         run: |
-          if ! command -v python3 &> /dev/null; then
-            echo "❌ Python3 is not installed. Please install it on your self-hosted runner."
+           if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+            Write-Error "❌ Python is not installed. Please install Python and add it to PATH."
             exit 1
-          fi
+           }
 
       - name: Run local HTTP server on port 80
         run: |
