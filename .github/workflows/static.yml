@@ -1,10 +1,9 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages + Localhost
+# Simple workflow for deploying static content to GitHub Pages and running on localhost (Windows)
+name: Deploy static content to Pages + Localhost (Windows)
 
 on:
   push:
     branches: ["main"]
-
   workflow_dispatch:
 
 permissions:
@@ -24,24 +23,24 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Pages
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Upload site files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '.'   # Path to your static website files
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # -------------------- Localhost Runner --------------------
+  # -------------------- Run on Localhost (Windows Self-hosted) --------------------
   run-on-localhost:
-    needs: deploy   # Ensures this runs AFTER GitHub Pages deploy
+    needs: deploy
     runs-on: self-hosted
     steps:
       - name: Checkout latest code
@@ -50,13 +49,16 @@ jobs:
       - name: Ensure Python is installed (Windows PowerShell)
         shell: powershell
         run: |
-           if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+          if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
             Write-Error "❌ Python is not installed. Please install Python and add it to PATH."
             exit 1
-           }
+          }
 
       - name: Run local HTTP server on port 8000
         shell: powershell
         run: |
-           Write-Host "🚀 Starting local HTTP server on port 8000..."
-           Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m", "http.server", "8000", "--bind", "127.0.0.1"
+          Write-Host "🧹 Cleaning up any old Python server processes..."
+          Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "*python*" } | Stop-Process -Force
+
+          Write-Host "🚀 Starting local HTTP server on http://localhost:8000..."
+          Start-Process -NoNewWindow -FilePath "python" -ArgumentList "-m", "http.server", "8000", "--bind", "127.0.0.1"
